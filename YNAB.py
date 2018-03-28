@@ -1,4 +1,4 @@
-# Capitol One csv format to YNAB csv format for import into YNAB
+# format to YNAB csv format (headers) for import into YNAB
 
 import os
 import pandas as pd 
