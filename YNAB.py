@@ -2,19 +2,20 @@
 # format to YNAB csv format (headers) for import into YNAB
 
 import os
-import pandas as pd 
 import datetime
 import csv
 
 '''
 TO DO:
-	Add a column for account type, though that may be unessary
-	Test import of new CSV file into YNAB
-	Add process for capital one and chase files
+	Add process for chase bank files
+	Error checking
+		duplicate files found in directory
+
 '''
 ynab_headers = ['Date', 'Payee', 'Outflow', 'Inflow']
+# place holder for schwab. Holds all rows for garbage data to be deleted
 pt = []
-
+# directory where csv files are saved. Change to proper directory if different
 path = 'D:\Downloads'
 
 # gets csv files from downloads directory
@@ -30,43 +31,69 @@ schwab_f = ''.join(schwab_file)
 chase_f = ''.join(chase_file)
 captial_f = ''.join(captial_one_file)
 
-# test for files
-# print(f"{schwab_f} * {chase_f} * {captial_f}")
-
 # changes to the download directory
 os.chdir(path)
 
-# opens the schwab csv file and reads it to the data variable
-with open(schwab_f, 'r') as file:
-	reader = csv.reader(file)
-	data = [r for r in reader]
+# check if file exists
+if schwab_f == '':
+	print('Schwab file not found')	
+else:
+	# opens the schwab csv file and reads it to the data variable
+	with open(schwab_f, 'r') as file:
+		reader = csv.reader(file)
+		data_s = [r for r in reader]
 
-# grabs all the data up to Posted transactions and puts them in a list
-for line in data:
-	if line[0] == 'Posted Transactions':
-		break
-	pt.append(f"{line[0]}")
+	# grabs all the data up to Posted transactions and puts them in a list
+	for line in data_s:
+		if line[0] == 'Posted Transactions':
+			break
+		pt.append(f"{line[0]}")
 
-'''
-counts the list created in pt and adds one so that we can delete all
-the data above Posted Transactions
-'''
-pt_position = len(pt) + 1
+	# counts the list created in pt and adds one so that we can delete all
+	# the data above Posted Transactions
+	pt_position = len(pt) + 1
 
-# generates a new data set
-new_data = [r for r in data]
+	# deletes all data before Posted Transactions
+	del data_s[:pt_position]
 
-# deletes all data before Posted Transactions
-del new_data[:pt_position]
+	# removes type, check number, running balance
+	for row in data_s:
+		del row[1:3]
+		del row[-1]
 
-# removes type, check number, running balance
-for row in new_data:
-	del row[1:3]
-	del row[-1]
+	# writes data to new csv for import into ynab
+	with open('schwab_ready_for_import.csv', 'w', newline='') as f:
+		writer = csv.writer(f, delimiter=',')
+		writer.writerow(ynab_headers)
+		for row in data_s:
+			writer.writerow(row)
+	print('Schwab import file created')
 
-# writes data to new csv for import into ynab
-with open('schwab_ready_for_import.csv', 'w', newline='') as f:
-	writer = csv.writer(f, delimiter=',')
-	writer.writerow(ynab_headers)
-	for row in new_data:
-		writer.writerow(row)
+# check if file exists
+if captial_f == '':
+	print('Capital One file not found')	
+else:
+	# opens captial one csv for reading
+	with open(captial_f, 'r') as file:
+		reader = csv.reader(file)
+		data_c = [r for r in reader]
+
+	# deletes header
+	del data_c[0]
+
+	# deletes transaction status and date and category
+	for row in data_c:
+		del row[0:2]
+		del row[-3]
+
+	# deletes last 4 digits of account
+	for row in data_c:
+		del row[1]
+
+	# writes clean data to new csv file for import
+	with open('capitalone_ready_for_import.csv', 'w', newline='') as f:
+		writer = csv.writer(f, delimiter=',')
+		writer.writerow(ynab_headers)
+		for row in data_c:
+			writer.writerow(row)
+	print('Capital One import file created')
