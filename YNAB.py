@@ -5,43 +5,39 @@ import os
 import pandas as pd 
 import datetime
 import csv
-'''
-location = r'E:\Projects\YNAB\schwab.csv'
-schwab = pd.read_csv(location)
-YNAB = ['Account', 'Date', 'Payee', 'Outflow', 'Inflow']
-
-schwab = pd.read_csv(location, names = ['Date', 'Type', 'Check #', 'Payee', 'Outflow', 'Inflow', 'Running Balance'])
- # remove columns
-del schwab['Type']
-del schwab['Check #']
-del schwab['Running Balance']
-# add account column
-schwab['Account'] = 'Investor Checking'
-# order columns to match YNAB
-schwab[['Account', 'Date', 'Payee', 'Outflow', 'Inflow']] # sort by columns
-# export to CSV
-schwab.to_csv(r'E:\Projects\YNAB\schwab_ReadyToExport.csv')
-'''
-# everything above this may now be junk given solution below
 
 '''
 TO DO:
 	Add a column for account type, though that may be unessary
-	new_data is clean and ready to be put into a new CSV file
-	Add necessary header to new CSV file - test if header is necessary
 	Test import of new CSV file into YNAB
-	Add process for capital one
-	Add procedure to automatically find csv files in downloads folder
+	Add process for capital one and chase files
 '''
-
-account = ''
-date = []
-Payee = []
-Outflow = []
-Inflow = []
+ynab_headers = ['Date', 'Payee', 'Outflow', 'Inflow']
 pt = []
 
-with open('schwab.csv', 'r') as file:
+path = 'D:\Downloads'
+
+# gets csv files from downloads directory
+schwab_file = [i for i in os.listdir(path) if os.path.isfile(os.path.join(path,i)) and \
+         'XXXXXX' in i]
+chase_file = [i for i in os.listdir(path) if os.path.isfile(os.path.join(path,i)) and \
+         'Chase' in i]
+captial_one_file = [i for i in os.listdir(path) if os.path.isfile(os.path.join(path,i)) and \
+         'transaction_download' in i]
+
+# converts the file names from list to string
+schwab_f = ''.join(schwab_file)
+chase_f = ''.join(chase_file)
+captial_f = ''.join(captial_one_file)
+
+# test for files
+# print(f"{schwab_f} * {chase_f} * {captial_f}")
+
+# changes to the download directory
+os.chdir(path)
+
+# opens the schwab csv file and reads it to the data variable
+with open(schwab_f, 'r') as file:
 	reader = csv.reader(file)
 	data = [r for r in reader]
 
@@ -68,6 +64,9 @@ for row in new_data:
 	del row[1:3]
 	del row[-1]
 
-# tests output
-for row in new_data:
-	print(row)
+# writes data to new csv for import into ynab
+with open('schwab_ready_for_import.csv', 'w', newline='') as f:
+	writer = csv.writer(f, delimiter=',')
+	writer.writerow(ynab_headers)
+	for row in new_data:
+		writer.writerow(row)
