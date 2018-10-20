@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # format to YNAB csv format (headers) for import into YNAB
 
 import os
@@ -7,10 +6,9 @@ import csv
 
 """
 TO DO:
-	Add process for chase bank files
+	Add process for chase bank, care credit and other financial institutions
 	Error checking
 	duplicate files found in directory
-
 """
 ynab_headers = ["Date", "Payee", "Outflow", "Inflow"]
 # place holder for schwab. Holds all rows for garbage data to be deleted
