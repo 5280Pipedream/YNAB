@@ -14,7 +14,7 @@ ynab_headers = ["Date", "Payee", "Outflow", "Inflow"]
 # place holder for schwab. Holds all rows for garbage data to be deleted
 pt = []
 # directory where csv files are saved. Change to proper directory if different
-path = "D:\Downloads"
+path = os.getenv('USERPROFILE') + '\downloads'
 
 # gets csv files from downloads directory
 schwab_file = [
