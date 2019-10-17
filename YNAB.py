@@ -9,7 +9,12 @@ TO DO:
 	Add process for chase bank, care credit and other financial institutions
 	Error checking
 	duplicate files found in directory
+    date checking & formatting
+        Capital one changed format (OCT 2019) broke YNAB import
+        YNAB = 'MM/DD/YYYY'
+        Capital one = 'YYYY-MM-DD'
 """
+
 ynab_headers = ["Date", "Payee", "Outflow", "Inflow"]
 # place holder for schwab. Holds all rows for garbage data to be deleted
 pt = []
