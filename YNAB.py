@@ -14,7 +14,7 @@ ynab_headers = ["Date", "Payee", "Outflow", "Inflow"]
 # place holder for schwab. Holds all rows for garbage data to be deleted
 pt = []
 # directory where csv files are saved. Change to proper directory if different
-path = os.getenv('USERPROFILE') + '\downloads'
+path = os.getenv("USERPROFILE") + "\downloads"
 
 # gets csv files from downloads directory
 schwab_file = [
@@ -27,7 +27,7 @@ chase_file = [
     for i in os.listdir(path)
     if os.path.isfile(os.path.join(path, i)) and "Chase" in i
 ]
-captial_one_file = [
+capital_one_file = [
     i
     for i in os.listdir(path)
     if os.path.isfile(os.path.join(path, i)) and "transaction_download" in i
@@ -36,7 +36,7 @@ captial_one_file = [
 # converts the file names from list to string
 schwab_f = "".join(schwab_file)
 chase_f = "".join(chase_file)
-captial_f = "".join(captial_one_file)
+capital_f = "".join(capital_one_file)
 
 # changes to the download directory
 os.chdir(path)
@@ -77,11 +77,11 @@ else:
     print("Schwab import file created")
 
 # check if file exists
-if captial_f == "":
+if capital_f == "":
     print("Capital One file not found")
 else:
     # opens captial one csv for reading
-    with open(captial_f, "r") as file:
+    with open(capital_f, "r") as file:
         reader = csv.reader(file)
         data_c = [r for r in reader]
 
@@ -90,17 +90,16 @@ else:
 
     # deletes transaction status and date and category
     for row in data_c:
-        del row[0:2]
-        del row[-3]
-
-        # deletes last 4 digits of account
-    for row in data_c:
+        del row[0]
         del row[1]
+        del row[2]
 
-        # writes clean data to new csv file for import
+    # writes clean data to new csv file for import
     with open("capitalone_ready_for_import.csv", "w", newline="") as f:
         writer = csv.writer(f, delimiter=",")
         writer.writerow(ynab_headers)
         for row in data_c:
             writer.writerow(row)
     print("Capital One import file created")
+
+exit()
