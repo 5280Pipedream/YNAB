@@ -1,19 +1,20 @@
 # format to YNAB csv format (headers) for import into YNAB
 
 import os
-import datetime
 import csv
+import pandas as pd
 
-"""
-TO DO:
-	Add process for chase bank, care credit and other financial institutions
-	Error checking
-	duplicate files found in directory
-    date checking & formatting
-        Capital one changed format (OCT 2019) broke YNAB import
-        YNAB = 'MM/DD/YYYY'
-        Capital one = 'YYYY-MM-DD'
-"""
+
+# TODO:
+# 	Add process for chase bank, care credit and other financial institutions
+# 	Error checking
+# 	duplicate files found in directory
+#     date checking & formatting
+#         Capital one changed format (OCT 2019) broke YNAB import
+#         YNAB = 'MM/DD/YYYY'
+#         Capital one = 'YYYY-MM-DD'
+#     Use pandas for all CSV files
+
 
 ynab_headers = ["Date", "Payee", "Outflow", "Inflow"]
 # place holder for schwab. Holds all rows for garbage data to be deleted
@@ -90,26 +91,11 @@ else:
 if capital_f == "":
     print("Capital One file not found")
 else:
-    # opens captial one csv for reading
-    with open(capital_f, "r") as file:
-        reader = csv.reader(file)
-        data_c = [r for r in reader]
-
-        # deletes header
-    del data_c[0]
-
-    # deletes transaction status and date and category
-    for row in data_c:
-        del row[0]
-        del row[1]
-        del row[2]
-
-    # writes clean data to new csv file for import
-    with open("capitalone_ready_for_import.csv", "w", newline="") as f:
-        writer = csv.writer(f, delimiter=",")
-        writer.writerow(ynab_headers)
-        for row in data_c:
-            writer.writerow(row)
-    print("Capital One import file created")
+    # converts capital one file
+    df = pd.read_csv(capital_f)
+    df.drop(['Transaction Date', 'Card No.', 'Category'], axis=1, inplace=True)
+    df['Posted Date'] = pd.to_datetime(df['Posted Date'])
+    df['Posted Date'] = df['Posted Date'].dt.strftime('%m/%d/%Y')
+    df.to_csv("capitalone_ready_for_import.csv", header=ynab_headers, index=False)
 
 exit()
