@@ -22,7 +22,7 @@ pt = []
 # temp fix for different user profiles on pcs
 computer = os.getenv("COMPUTERNAME")
 # directory where csv files are saved. Change to proper directory if different
-if computer == 'SUPPORT-7510':
+if computer == "SUPPORT-7510":
     path = "D:\Downloads"
 else:
     path = os.getenv("USERPROFILE") + "\downloads"
@@ -93,9 +93,10 @@ if capital_f == "":
 else:
     # converts capital one file
     df = pd.read_csv(capital_f)
-    df.drop(['Transaction Date', 'Card No.', 'Category'], axis=1, inplace=True)
-    df['Posted Date'] = pd.to_datetime(df['Posted Date'])
-    df['Posted Date'] = df['Posted Date'].dt.strftime('%m/%d/%Y')
+    df.drop(["Transaction Date", "Card No.", "Category"], axis=1, inplace=True)
+    df["Posted Date"] = pd.to_datetime(df["Posted Date"])
+    df["Posted Date"] = df["Posted Date"].dt.strftime("%m/%d/%Y")
     df.to_csv("capitalone_ready_for_import.csv", header=ynab_headers, index=False)
+    print("CREATED capitalone_ready_for_import.csv")
 
 exit()
